@@ -1,20 +1,43 @@
-//create a div
-var newDiv = document.createElement('div');
-newDiv.className='hello';
-newDiv.id = 'hello';
-newDiv.setAttribute('title','HelloDiv');
-//create a text node
-var newDivText  = document.createTextNode('Hello word');
-//add text to div
-newDiv.appendChild(newDivText);
-var container = document.querySelector('header .container');
-var h1 = document.querySelector('header h1');
+var form = document.getElementById('addForm');
+var itemList = document.getElementById('items');
 
-console.log(newDiv);
-newDiv.style.fontSize="30px";
-container.insertBefore(newDiv,h1);
-var newNode = document.createElement('li');
-var textNode = document.createTextNode('Hello word');
-newNode.appendChild(textNode);
-var items = document.getElementById('items');
-items.insertBefore(newNode , items.children[0]);
+
+
+form.addEventListener('submit', addItem);
+itemList.addEventListener('click', removeItem);
+//add item
+function addItem(event){
+    event.preventDefault();
+
+   //get input value
+    var newItem = document.getElementById('item').value;
+    //create new li element
+    var li = document.createElement('li');
+    //add class
+    li.className='list-group-item';
+
+    //add text node with input value
+    li.appendChild(document.createTextNode(newItem));
+    
+    itemList.appendChild(li);
+    //creAte a delete button
+    var deletebtn = document.createElement('button');
+    //add class 
+    deletebtn.className = 'btn btn-danger btn-sm float-right delete';
+    //add textnode X
+    deletebtn.appendChild(document.createTextNode('X'));
+    
+    li.appendChild(deletebtn);
+    
+    itemList.appendChild(li);
+
+}
+function removeItem(e){
+    if(e.target.classList.contains('delete')){
+        if(confirm('Are You Sure?')){
+            var li = e.target.parentElement;
+            itemList.removeChild(li);
+        }
+    }
+
+}
