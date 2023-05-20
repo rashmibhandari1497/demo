@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+    <title>Booking Appoinment App</title>
+</head>
+<body>
+    <header id="main-header" class="bg-success text-white p-4 mb-3">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-6">
+                <h1 id="header-title"style="color: black">Booking App</h1>
+            </div>
+            <div class="col-md-6 align-self-center">
+                <input type="text" class="form-control" id="filter" placeholder="Search Items...">
+            </div>
+          </div>
+        </div>
+      </header>
+      <div class="container">
+        <div id="main" class="card card-body">
+         <h2 class="title">Booking</h2>
+         <form  id="addForm" class="form-inline mb-3">
+            <div>            
+                <label for="fname">First Name: </label>
+                <input type="text" class="form-control mr-2" id="fname"required>
+            </div>
+            <br>
+            <div><label for="lname">Last Name: </label>
+            <input type="text" class="form-control mr-2" id="lname" required>
+            </div>
+           <br>
+           <div>
+           <label for="email">Email: </label>
+           <input type="email" class="form-control mr-2" id="email" required placeholder="xyz@gmail.com">
+           </div>
+           <div>
+            <label for="date">DOB: </label>
+            <input type="date" class="form-control  xl mr-6" id="date" required>
+           </div>
+           <div class="d-grid gap-2 col-6 mx-auto">
+            <button type="submit" class="btn btn-primary">submit</button>
+           </div>
+           
+        </form>
+         
+        </div>
+       </div>
+       <script  src="book.js"></script>
+    
+</body>
+</html>
