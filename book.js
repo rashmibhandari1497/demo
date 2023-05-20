@@ -14,9 +14,19 @@ function onSubmit(e){
         email:emailInput.value,
         dob:dateOfBirth.value
     }
-    localStorage.setItem(nameInput.value,JSON.stringify(userData));
+    localStorage.setItem(emailInput.value,JSON.stringify(userData));
     const msg = nameInput.value + " " +lastInput.value + "-"+ emailInput.value +"-" + dateOfBirth.value;  
+    let newdiv = document.createElement('div');
+    let newbtn = document.createElement('button');
+    newbtn.innerText="delete";
     let newpara = document.createElement('p');
+    newdiv.setAttribute('id',`${emailInput.value}`);
+    newbtn.addEventListener('click', ()=>{deletefn(emailInput.value)});
     newpara.innerText = msg;
-    msgpara.appendChild(newpara);
+    newdiv.append(newpara,newbtn);
+    msgpara.appendChild(newdiv);
+}
+function deletefn(email){
+    document.getElementById(email).remove();
+    localStorage.removeItem(email);
 }
