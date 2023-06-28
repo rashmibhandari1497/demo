@@ -17,6 +17,7 @@
         <button> Submit </button>
     </form>
     <ul id="listOfitems"></ul>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
     <script>
         function saveToLocalStorage(event){
             event.preventDefault();
@@ -28,8 +29,16 @@
                 email,
                 phonenumber
             }
-            localStorage.setItem(obj.email,JSON.stringify(obj));
-            showUserOnScreen(obj);
+            axios.post("https://crudcrud.com/api/1eaeaa1dcb37439e8b7648538018f77a/appinmentdata",obj)
+                .then((response) =>{
+                    showUserOnScreen(response.data);
+                    console.log(response);
+                })
+                .catch((err)=>{
+                    console.log(err);
+                })
+            //localStorage.setItem(obj.email,JSON.stringify(obj));
+            //showUserOnScreen(obj);
         }
         function showUserOnScreen(obj){
             const parentElem = document.getElementById('listOfitems');
