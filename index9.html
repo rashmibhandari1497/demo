@@ -7,39 +7,64 @@
     <title>Details</title>
 </head>
 <body>
-    <form onsubmit="saveToLocalStorage(event)">
+    <form id="userForm" onsubmit="saveToLocalStorage(event)">
         <label for="username">Name :</label>
         <input type="text" name="username" id="usernameInputTag"required />
         <label for="emailid">Email Id:</label>
         <input type="email" name="emailid" id="emailInputTag" required />
         <label for="phonenumber">Phone Number :</label>
         <input type="tel" name="phonenumber" id="phonenumberInputTag"/>
-        <button> Submit </button>
+        <button id="submitButton">Submit</button>
+        <button type="button" id="cancelButton" onclick="cancelEdit()">Cancel</button>
+    </form>
     </form>
     <ul id="listOfitems"></ul>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
     <script>
+        let editUserId = null;
         function saveToLocalStorage(event){
             event.preventDefault();
             const name = event.target.username.value;
             const email = event.target.emailid.value;
             const phonenumber = event.target.phonenumber.value;
-            const obj = {
-                name,
-                email,
-                phonenumber
+            if (editUserId) {
+                // Editing existing user
+                axios.put(`https://crudcrud.com/api/1eaeaa1dcb37439e8b7648538018f77a/appinmentdata/${editUserId}`, { name, email, phonenumber })
+                    .then((response) => {
+                        if (response.status === 200) {
+                            resetForm();
+                            updateUserOnScreen(response.data);
+                            editUserId = null;
+                        }
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    });
+            } else {
+                // Adding new user
+                axios.post("https://crudcrud.com/api/1eaeaa1dcb37439e8b7648538018f77a/appinmentdata", { name, email, phonenumber })
+                    .then((response) => {
+                        if (response.status === 201) {
+                            resetForm();
+                            showUserOnScreen(response.data);
+                        }
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    });
             }
-            axios.post("https://crudcrud.com/api/1eaeaa1dcb37439e8b7648538018f77a/appinmentdata",obj)
-                .then((response) =>{
-                    showUserOnScreen(response.data);
-                    console.log(response);
-                })
-                .catch((err)=>{
-                    console.log(err);
-                })
-            //localStorage.setItem(obj.email,JSON.stringify(obj));
-            //showUserOnScreen(obj);
         }
+        function resetForm() {
+            document.getElementById("userForm").reset();
+            document.getElementById("submitButton").textContent = "Submit";
+            document.getElementById("cancelButton").style.display = "none";
+        }
+
+        function cancelEdit() {
+            resetForm();
+            editUserId = null;
+        }
+
         window.addEventListener("DOMContentLoaded",() => {
             axios.get("https://crudcrud.com/api/1eaeaa1dcb37439e8b7648538018f77a/appinmentdata")
                 .then((response) => {
@@ -52,19 +77,12 @@
                     console.log(err);
                 })
         })
-        function deleteUser(userId) {
-            axios.delete(`https://crudcrud.com/api/1eaeaa1dcb37439e8b7648538018f77a/appinmentdata/${userId}`)
-                .then((response) => {
-                    if (response.status === 200) {
-                        const parentElem = document.getElementById('listOfitems');
-                        const childElem = document.getElementById(userId);
-                        parentElem.removeChild(childElem);
-                    }
-                })
-                .catch((err) => {
-                    console.log(err);
-                });
+        
+        function updateUserOnScreen(obj) {
+            const userElem = document.getElementById(obj._id);
+            userElem.textContent = obj.name + ' - ' + obj.email + ' - ' + obj.phonenumber;
         }
+
         function showUserOnScreen(obj){
             const parentElem = document.getElementById('listOfitems');
             const childElem = document.createElement('li');
@@ -92,8 +110,29 @@
             childElem.appendChild(editButton);
             
             parentElem.appendChild(childElem);
-
         }
+        function editUser(user) {
+            document.getElementById('usernameInputTag').value = user.name;
+            document.getElementById('emailInputTag').value = user.email;
+            document.getElementById('phonenumberInputTag').value = user.phonenumber;
+            document.getElementById("submitButton").textContent = "Save";
+            document.getElementById("cancelButton").style.display = "inline-block";
+            editUserId = user._id;
+        }
+        function deleteUser(userId) {
+            axios.delete(`https://crudcrud.com/api/1eaeaa1dcb37439e8b7648538018f77a/appinmentdata/${userId}`)
+                .then((response) => {
+                    if (response.status === 200) {
+                        const parentElem = document.getElementById('listOfitems');
+                        const childElem = document.getElementById(userId);
+                        parentElem.removeChild(childElem);
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        }
+        
     </script>
 </body>
 </html>
