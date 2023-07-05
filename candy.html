@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+    <title>Candy Shop Seller</title>
+</head>
+<body>
+    <h1 style="text-align: center;">Candy Shop Seller</h1>
+    <form id="addform" onsubmit="saveToStorege(event)">
+        <label for="candy">Candy Name:</label>
+        <input type="text" name="candy" id="candy" required>
+        <label for="description">Description:</label>
+        <input type="text" name="description" id="description" required>
+        <label for="price">Price:</label>
+        <input type="number" name="price" id="price" required>
+        <label for="quantity">Quantity:</label>
+        <input type="number" name="quantity" id="quantity" required>
+        <button id="submitbutton">Add Item</button>
+    </form>
+    <p>Reduced Quantity: <span id="updatedQuantity"></span></p>
+    <ul id="listOfItems"></ul>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
+
+    <script>
+        let editUserId = null;
+
+        function saveToStorege(event) {
+            event.preventDefault();
+
+            const candyName = event.target.candy.value;
+            const description = event.target.description.value;
+            const price = event.target.price.value;
+            let quantity = event.target.quantity.value;
+
+            if (editUserId) {
+                // Editing existing candy item
+                axios.put(`https://crudcrud.com/api/12700b06d60e4c268e250205126a385d/appinmentdata/${editUserId}`, {
+                    candyName,
+                    description,
+                    price,
+                    quantity
+                })
+                    .then((response) => {
+                        if (response.status === 200) {
+                            resetForm();
+                            updateCandyOnScreen(response.data);
+                            editUserId = null;
+                        }
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    });
+            } else {
+                // Adding new candy item
+                axios.post("https://crudcrud.com/api/12700b06d60e4c268e250205126a385d/appinmentdata", {
+                    candyName,
+                    description,
+                    price,
+                    quantity
+                })
+                    .then((response) => {
+                        if (response.status === 201) {
+                            resetForm();
+                            showCandyOnScreen(response.data);
+                        }
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    });
+            }
+        }
+
+        function resetForm() {
+            document.getElementById("addform").reset();
+            document.getElementById("submitbutton").textContent = "Add Item";
+        }
+
+        function showCandyOnScreen(candy) {
+            const listOfItems = document.getElementById("listOfItems");
+
+            const itemElement = document.createElement("li");
+            itemElement.textContent = `Name: ${candy.candyName}, Description: ${candy.description}, Price: ${candy.price}, Quantity: ${candy.quantity}`;
+
+            const buyButton = document.createElement("button");
+            buyButton.textContent = "Buy";
+            buyButton.addEventListener("click", () => {
+                buyCandy(candy);
+            });
+
+            itemElement.appendChild(buyButton);
+            listOfItems.appendChild(itemElement);
+        }
+
+        function updateCandyOnScreen(candy) {
+            const listOfItems = document.getElementById("listOfItems");
+
+            const itemElement = listOfItems.querySelector(`[data-id="${candy._id}"]`);
+            if (itemElement) {
+                itemElement.textContent = `Name: ${candy.candyName}, Description: ${candy.description}, Price: ${candy.price}, Quantity: ${candy.quantity}`;
+
+               
+            
+            }
+        }
+
+        function buyCandy(candy) {
+            let quantityToBuy = parseInt(prompt("Enter the quantity to buy:", "1"));
+
+            if (isNaN(quantityToBuy)) {
+                alert("Invalid quantity entered.");
+                return;
+            }
+
+            quantityToBuy = Math.min(quantityToBuy, candy.quantity);
+
+            candy.quantity -= quantityToBuy;
+            updateCandyOnScreen(candy);
+            showUpdatedQuantity(candy.quantity)
+        }
+        function showUpdatedQuantity(quantity) {
+            const quantityElement = document.getElementById("updatedQuantity");
+            quantityElement.textContent = `Reduced Quantity: ${quantity}`;
+        }
+        window.addEventListener("DOMContentLoaded", () => {
+            axios.get("https://crudcrud.com/api/12700b06d60e4c268e250205126a385d/appinmentdata")
+                .then((response) => {
+                    if (response.status === 200) {
+                        const candyItems = response.data;
+                        candyItems.forEach((candy) => {
+                            showCandyOnScreen(candy);
+                        });
+                    }
+                })
+                .catch((err) => {
+                    console.log(err);
+                });
+        });
+
+    </script>
+</body>
+</html>
